@@ -1,0 +1,21 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+
+# Google Cloud service account key
+service_acc.json
+
+# Local development binaries
+cloud-sql-proxy.exe
+
+# Logs (if any)
+*.log
+
+# OS-specific
+.DS_Store
+
+# IDE/editor settings
+.vscode/
+.idea/
