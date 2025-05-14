@@ -6,7 +6,7 @@ exports.getAllCustomers = (callback) => {
 };
 
 exports.getCustomerBycustomer_id = (product_id, callback) => {
-    pool.query('SELECT * FROM Customer WHERE Customer = ?', [product_id], callback);
+    pool.query('SELECT * FROM Customer WHERE customer_id = ?', [product_id], callback);
 };
 
 exports.searchCustomerByName = (name, callback) => {
