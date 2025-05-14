@@ -46,7 +46,7 @@ exports.updateOrder = (Order, callback) => {
   pool.query(query, values, callback);
 };
 
-exports.deleteProduct = (order_id, callback) => {
+exports.deleteOrder = (order_id, callback) => {
   pool.query(
     "DELETE FROM Order WHERE order_id = ?",
     [order_id],

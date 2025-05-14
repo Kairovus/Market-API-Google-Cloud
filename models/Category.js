@@ -1,19 +1,15 @@
 
 const pool = require('./db');
 
-exports.getAllCustomers = (callback) => {
-    pool.query('SELECT * FROM Customer', callback);
+exports.getAllCategory = (callback) => {
+    pool.query('SELECT * FROM Category', callback);
 };
 
-exports.getCustomerBycustomer_id = (customer_id, callback) => {
-    pool.query('SELECT * FROM Customer WHERE customer_id = ?', [customer_id], callback);
+exports.searchCategoryByName = (name, callback) => {
+    pool.query('SELECT * FROM Category WHERE name LIKE ?', [`%${name}%`], callback);
 };
 
-exports.searchCustomerByName = (name, callback) => {
-    pool.query('SELECT * FROM Customer WHERE name LIKE ?', [`%${name}%`], callback);
-};
-
-exports.addCustomer = (Customer, callback) => {
+exports.addProduct = (Customer, callback) => {
     const {
       customer_id,
       name,
@@ -49,7 +45,7 @@ exports.addCustomer = (Customer, callback) => {
     pool.query(query, values, callback);
   };
   
-  exports.deleteCustomer = (customer_id, callback) => {
+  exports.deleteProduct = (customer_id, callback) => {
     pool.query(
       "DELETE FROM Customer WHERE customer_id = ?",
       [customer_id],
