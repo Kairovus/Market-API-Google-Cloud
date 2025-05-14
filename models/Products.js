@@ -1,32 +1,32 @@
-// ... existing code ...
+
 const pool = require('./db');
 
 exports.getAllProducts = (callback) => {
-    pool.query('SELECT * FROM product', callback);
+    pool.query('SELECT * FROM Product', callback);
 };
 
-exports.getProductById = (id, callback) => {
-    pool.query('SELECT * FROM product WHERE id = ?', [id], callback);
+exports.getProductByproduct_id = (product_id, callback) => {
+    pool.query('SELECT * FROM Product WHERE product_id = ?', [product_id], callback);
 };
 
 exports.searchProductByName = (name, callback) => {
-    pool.query('SELECT * FROM product WHERE product_name LIKE ?', [`%${name}%`], callback);
+    pool.query('SELECT * FROM Product WHERE name LIKE ?', [`%${name}%`], callback);
 };
 
-exports.addProduct = (product, callback) => {
-    const { id, product_code, product_name, product_price, product_stock, product_description } = product;
-    const query = `INSERT INTO product (id, product_code, product_name, product_price, product_stock, product_description) VALUES (?, ?, ?, ?, ?, ?)`;
-    const values = [id, product_code, product_name, product_price, product_stock, product_description];
+exports.addProduct = (Product, callback) => {
+    const { product_id, name, description, price, stock_quantity,category_id, supplier_id } = Product;
+    const query = `INSERT INTO Product (product_id, name, description, price, stock_quantity, category_id, supplier_id) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    const values = [product_id, name, description, price, stock_quantity,category_id, supplier_id];
     pool.query(query, values, callback);
 };
 
-exports.updateProduct = (product, callback) => {
-    const { id, product_code, product_name, product_price, product_stock, product_description } = product;
-    const query = `UPDATE product SET product_code = ?, product_name = ?, product_price = ?, product_stock = ?, product_description = ? WHERE id = ?`;
-    const values = [product_code, product_name, product_price, product_stock, product_description, id];
+exports.updateProduct = (Product, callback) => {
+    const { product_id, name, description, price, stock_quantity,category_id, supplier_id } = Product;
+    const query = `UPDATE Product SET name = ?, description = ?, price = ?, stock_quantity = ?, category_id = ?, supplier_id = ? WHERE product_id = ?`;
+    const values = [name, description, price, stock_quantity,category_id, supplier_id, product_id];
     pool.query(query, values, callback);
 };
 
-exports.deleteProduct = (id, callback) => {
-    pool.query('DELETE FROM product WHERE id = ?', [id], callback);
+exports.deleteProduct = (product_id, callback) => {
+    pool.query('DELETE FROM Product WHERE product_id = ?', [product_id], callback);
 };
