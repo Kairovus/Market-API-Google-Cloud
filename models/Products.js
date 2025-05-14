@@ -15,7 +15,7 @@ exports.searchProductByName = (name, callback) => {
 
 exports.addProduct = (Product, callback) => {
     const { product_id, name, description, price, stock_quantity,category_id, supplier_id } = Product;
-    const query = `INSERT INTO Product (product_id, name, description, price, stock_quantity, category_id, supplier_id) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    const query = `INSERT INTO Product (name, description, price, stock_quantity, category_id, supplier_id) VALUES (?, ?, ?, ?, ?, ?)`;
     const values = [product_id, name, description, price, stock_quantity,category_id, supplier_id];
     pool.query(query, values, callback);
 };
