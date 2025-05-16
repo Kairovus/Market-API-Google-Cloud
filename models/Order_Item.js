@@ -1,4 +1,4 @@
-const pool = require("./db");
+const pool = require("./config/db");
 
 exports.getAllOrderItem = (callback) => {
   pool.query("SELECT * FROM Order_Item", callback);
