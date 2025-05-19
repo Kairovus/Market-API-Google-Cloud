@@ -1,5 +1,5 @@
-require('dotenv').config();
-const mysql = require('mysql2/promise');
+require("dotenv").config();
+const mysql = require("mysql2/promise");
 
 const db = mysql.createPool({
   host: process.env.DB_HOST,
@@ -8,17 +8,20 @@ const db = mysql.createPool({
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  ssl: {
+    rejectUnauthorized: true,
+  },
 });
 
 // Test the connection
 const testConnection = async () => {
   try {
     const connection = await db.getConnection();
-    console.log('Connected to MySQL database!');
+    console.log("Connected to Google Cloud SQL database!");
     connection.release();
   } catch (err) {
-    console.error('Database connection failed:', err);
+    console.error("Database connection failed:", err);
   }
 };
 
