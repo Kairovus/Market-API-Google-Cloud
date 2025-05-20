@@ -75,6 +75,19 @@ class Products {
       throw new Error("Failed to delete product");
     }
   }
+
+  static async searchByName(name) {
+    try {
+      const [rows] = await db.query(
+        "SELECT * FROM products WHERE name LIKE ?",
+        [`%${name}%`]
+      );
+      return rows;
+    } catch (error) {
+      console.error("Error in searchByName:", error);
+      throw new Error("Failed to search products");
+    }
+  }
 }
 
 module.exports = Products;

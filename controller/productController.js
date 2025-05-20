@@ -60,3 +60,13 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.searchProductByName = async (req, res) => {
+  try {
+    const products = await Products.searchByName(req.params.name);
+    res.json(products);
+  } catch (error) {
+    console.error("Error in searchProductByName:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

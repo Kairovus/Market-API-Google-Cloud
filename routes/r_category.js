@@ -3,13 +3,13 @@ const router = express.Router();
 const categoryController = require("../controller/categoryController");
 
 // Get all categories
-router.get("/", categoryController.getAllCategory);
+router.get("/", categoryController.getAllCategories);
 
 // Search category by name
 router.get("/search/:name", categoryController.searchCategoryByName);
 
 // Add new category
-router.post("/", categoryController.addCategory);
+router.post("/", categoryController.createCategory);
 
 // Update category
 router.put("/", categoryController.updateCategory);

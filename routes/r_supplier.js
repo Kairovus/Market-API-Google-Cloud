@@ -12,7 +12,7 @@ router.get("/search/:name", supplierController.searchSupplierByName);
 router.get("/:id", supplierController.getSupplierById);
 
 // Add new supplier
-router.post("/", supplierController.addSupplier);
+router.post("/", supplierController.createSupplier);
 
 // Update supplier
 router.put("/", supplierController.updateSupplier);

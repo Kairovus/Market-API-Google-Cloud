@@ -12,7 +12,7 @@ router.get("/search/:name", customerController.searchCustomerByName);
 router.get("/:id", customerController.getCustomerById);
 
 // Add new customer
-router.post("/", customerController.addCustomer);
+router.post("/", customerController.createCustomer);
 
 // Update customer
 router.put("/", customerController.updateCustomer);

@@ -9,7 +9,7 @@ router.get("/", orderItemController.getAllOrderItems);
 router.get("/:id", orderItemController.getOrderItemById);
 
 // Add new order item
-router.post("/", orderItemController.addOrderItem);
+router.post("/", orderItemController.createOrderItem);
 
 // Update order item
 router.put("/", orderItemController.updateOrderItem);

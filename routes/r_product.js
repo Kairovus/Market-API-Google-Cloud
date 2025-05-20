@@ -12,7 +12,7 @@ router.get("/search/:name", productController.searchProductByName);
 router.get("/:id", productController.getProductById);
 
 // Add new product
-router.post("/", productController.addProduct);
+router.post("/", productController.createProduct);
 
 // Update product
 router.put("/", productController.updateProduct);
