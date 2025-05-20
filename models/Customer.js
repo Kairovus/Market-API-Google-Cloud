@@ -1,43 +1,91 @@
-const pool = require("../config/db");
+const db = require("../config/db");
 
-exports.getAllCustomers = (callback) => {
-  pool.query("SELECT * FROM Customer", callback);
-};
+class Customer {
+  static async getAll() {
+    try {
+      const [rows] = await db.query("SELECT * FROM Customer");
+      return rows;
+    } catch (error) {
+      console.error("Error in getAll:", error);
+      throw new Error("Failed to fetch customers");
+    }
+  }
 
-exports.getCustomerBycustomer_id = (customer_id, callback) => {
-  pool.query(
-    "SELECT * FROM Customer WHERE customer_id = ?",
-    [customer_id],
-    callback
-  );
-};
+  static async getById(id) {
+    try {
+      const [rows] = await db.query(
+        "SELECT * FROM Customer WHERE customer_id = ?",
+        [id]
+      );
+      return rows[0];
+    } catch (error) {
+      console.error("Error in getById:", error);
+      throw new Error("Failed to fetch customer");
+    }
+  }
 
-exports.searchCustomerByName = (name, callback) => {
-  pool.query(
-    "SELECT * FROM Customer WHERE name LIKE ?",
-    [`%${name}%`],
-    callback
-  );
-};
+  static async searchByName(name) {
+    try {
+      const [rows] = await db.query(
+        "SELECT * FROM Customer WHERE name LIKE ?",
+        [`%${name}%`]
+      );
+      return rows;
+    } catch (error) {
+      console.error("Error in searchByName:", error);
+      throw new Error("Failed to search customers");
+    }
+  }
 
-exports.addCustomer = (Customer, callback) => {
-  const { customer_id, name, email, phone, address } = Customer;
-  const query = `INSERT INTO Customer (name, email, phone, address) VALUES (?, ?, ?, ?)`;
-  const values = [name, email, phone, address];
-  pool.query(query, values, callback);
-};
+  static async create(customerData) {
+    try {
+      const [result] = await db.query(
+        "INSERT INTO Customer (name, email, phone, address) VALUES (?, ?, ?, ?)",
+        [
+          customerData.name,
+          customerData.email,
+          customerData.phone,
+          customerData.address,
+        ]
+      );
+      return result.insertId;
+    } catch (error) {
+      console.error("Error in create:", error);
+      throw new Error("Failed to create customer");
+    }
+  }
 
-exports.updateCustomer = (Customer, callback) => {
-  const { customer_id, name, email, phone, address } = Customer;
-  const query = `UPDATE Customer SET name = ?, email = ?, phone = ?, address = ? WHERE customer_id = ?`;
-  const values = [name, email, phone, address];
-  pool.query(query, values, callback);
-};
+  static async update(id, customerData) {
+    try {
+      const [result] = await db.query(
+        "UPDATE Customer SET name = ?, email = ?, phone = ?, address = ? WHERE customer_id = ?",
+        [
+          customerData.name,
+          customerData.email,
+          customerData.phone,
+          customerData.address,
+          id,
+        ]
+      );
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error("Error in update:", error);
+      throw new Error("Failed to update customer");
+    }
+  }
 
-exports.deleteCustomer = (customer_id, callback) => {
-  pool.query(
-    "DELETE FROM Customer WHERE customer_id = ?",
-    [customer_id],
-    callback
-  );
-};
+  static async delete(id) {
+    try {
+      const [result] = await db.query(
+        "DELETE FROM Customer WHERE customer_id = ?",
+        [id]
+      );
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error("Error in delete:", error);
+      throw new Error("Failed to delete customer");
+    }
+  }
+}
+
+module.exports = Customer;

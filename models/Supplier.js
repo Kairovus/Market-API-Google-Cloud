@@ -1,43 +1,80 @@
-const pool = require("../config/db");
+const db = require("../config/db");
 
-exports.getAllSuppliers = (callback) => {
-  pool.query("SELECT * FROM Supplier", callback);
-};
+class Supplier {
+  static async getAll() {
+    try {
+      const [rows] = await db.query("SELECT * FROM Supplier");
+      return rows;
+    } catch (error) {
+      console.error("Error in getAll:", error);
+      throw new Error("Failed to fetch suppliers");
+    }
+  }
 
-exports.getSupplierBySupplier_id = (Supplier_id, callback) => {
-  pool.query(
-    "SELECT * FROM Supplier WHERE Supplier_id = ?",
-    [Supplier_id],
-    callback
-  );
-};
+  static async getById(id) {
+    try {
+      const [rows] = await db.query(
+        "SELECT * FROM Supplier WHERE supplier_id = ?",
+        [id]
+      );
+      return rows[0];
+    } catch (error) {
+      console.error("Error in getById:", error);
+      throw new Error("Failed to fetch supplier");
+    }
+  }
 
-exports.searchSupplierByName = (name, callback) => {
-  pool.query(
-    "SELECT * FROM Supplier WHERE name LIKE ?",
-    [`%${name}%`],
-    callback
-  );
-};
+  static async searchByName(name) {
+    try {
+      const [rows] = await db.query(
+        "SELECT * FROM Supplier WHERE name LIKE ?",
+        [`%${name}%`]
+      );
+      return rows;
+    } catch (error) {
+      console.error("Error in searchByName:", error);
+      throw new Error("Failed to search suppliers");
+    }
+  }
 
-exports.addSupplier = (Supplier, callback) => {
-  const { supplier_id, name, contact_email, phone } = Supplier;
-  const query = `INSERT INTO Supplier (name, contact_email, phone) VALUES (?, ?, ?)`;
-  const values = [name, contact_email, phone];
-  pool.query(query, values, callback);
-};
+  static async create(supplierData) {
+    try {
+      const [result] = await db.query(
+        "INSERT INTO Supplier (name, contact_email, phone) VALUES (?, ?, ?)",
+        [supplierData.name, supplierData.contact_email, supplierData.phone]
+      );
+      return result.insertId;
+    } catch (error) {
+      console.error("Error in create:", error);
+      throw new Error("Failed to create supplier");
+    }
+  }
 
-exports.updateSupplier = (Supplier, callback) => {
-  const { supplier_id, name, contact_email, phone } = Supplier;
-  const query = `UPDATE Supplier SET name = ?, contact_email = ?, phone = ? WHERE supplier_id = ?`;
-  const values = [name, contact_email, phone];
-  pool.query(query, values, callback);
-};
+  static async update(id, supplierData) {
+    try {
+      const [result] = await db.query(
+        "UPDATE Supplier SET name = ?, contact_email = ?, phone = ? WHERE supplier_id = ?",
+        [supplierData.name, supplierData.contact_email, supplierData.phone, id]
+      );
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error("Error in update:", error);
+      throw new Error("Failed to update supplier");
+    }
+  }
 
-exports.deleteSupplier = (supplier_id, callback) => {
-  pool.query(
-    "DELETE FROM Supplier WHERE supplier_id = ?",
-    [supplier_id],
-    callback
-  );
-};
+  static async delete(id) {
+    try {
+      const [result] = await db.query(
+        "DELETE FROM Supplier WHERE supplier_id = ?",
+        [id]
+      );
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error("Error in delete:", error);
+      throw new Error("Failed to delete supplier");
+    }
+  }
+}
+
+module.exports = Supplier;

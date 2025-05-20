@@ -1,74 +1,80 @@
-const pool = require("../config/db");
+const db = require("../config/db");
 
-exports.getAllProducts = (callback) => {
-  pool.query("SELECT * FROM Product", callback);
-};
+class Products {
+  static async getAll() {
+    try {
+      const [rows] = await db.query("SELECT * FROM products");
+      return rows;
+    } catch (error) {
+      console.error("Error in getAll:", error);
+      throw new Error("Failed to fetch products");
+    }
+  }
 
-exports.getProductByproduct_id = (product_id, callback) => {
-  pool.query(
-    "SELECT * FROM Product WHERE product_id = ?",
-    [product_id],
-    callback
-  );
-};
+  static async getById(id) {
+    try {
+      const [rows] = await db.query("SELECT * FROM products WHERE id = ?", [
+        id,
+      ]);
+      return rows[0];
+    } catch (error) {
+      console.error("Error in getById:", error);
+      throw new Error("Failed to fetch product");
+    }
+  }
 
-exports.searchProductByName = (name, callback) => {
-  pool.query(
-    "SELECT * FROM Product WHERE name LIKE ?",
-    [`%${name}%`],
-    callback
-  );
-};
+  static async create(productData) {
+    try {
+      const [result] = await db.query(
+        "INSERT INTO products (name, description, price, stock, category_id, supplier_id) VALUES (?, ?, ?, ?, ?, ?)",
+        [
+          productData.name,
+          productData.description,
+          productData.price,
+          productData.stock,
+          productData.category_id,
+          productData.supplier_id,
+        ]
+      );
+      return result.insertId;
+    } catch (error) {
+      console.error("Error in create:", error);
+      throw new Error("Failed to create product");
+    }
+  }
 
-exports.addProduct = (Product, callback) => {
-  const {
-    product_id,
-    name,
-    description,
-    price,
-    stock_quantity,
-    category_id,
-    supplier_id,
-  } = Product;
-  const query = `INSERT INTO Product (name, description, price, stock_quantity, category_id, supplier_id) VALUES (?, ?, ?, ?, ?, ?)`;
-  const values = [
-    name,
-    description,
-    price,
-    stock_quantity,
-    category_id,
-    supplier_id,
-  ];
-  pool.query(query, values, callback);
-};
+  static async update(id, productData) {
+    try {
+      const [result] = await db.query(
+        "UPDATE products SET name = ?, description = ?, price = ?, stock = ?, category_id = ?, supplier_id = ? WHERE id = ?",
+        [
+          productData.name,
+          productData.description,
+          productData.price,
+          productData.stock,
+          productData.category_id,
+          productData.supplier_id,
+          id,
+        ]
+      );
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error("Error in update:", error);
+      throw new Error("Failed to update product");
+    }
+  }
 
-exports.updateProduct = (Product, callback) => {
-  const {
-    product_id,
-    name,
-    description,
-    price,
-    stock_quantity,
-    category_id,
-    supplier_id,
-  } = Product;
-  const query = `UPDATE Product SET name = ?, description = ?, price = ?, stock_quantity = ?, category_id = ?, supplier_id = ? WHERE product_id = ?`;
-  const values = [
-    name,
-    description,
-    price,
-    stock_quantity,
-    category_id,
-    supplier_id,
-    product_id,
-  ];
-  pool.query(query, values, callback);
-};
+  static async delete(id) {
+    try {
+      const [result] = await db.query("DELETE FROM products WHERE id = ?", [
+        id,
+      ]);
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error("Error in delete:", error);
+      throw new Error("Failed to delete product");
+    }
+  }
+}
 
-exports.deleteProduct = (product_id, callback) => {
-  pool.query(
-    "DELETE FROM Product WHERE product_id = ?",
-    [product_id],
-    callback
-  );
-};
+module.exports = Products;

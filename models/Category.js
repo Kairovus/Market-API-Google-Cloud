@@ -1,35 +1,67 @@
-const pool = require("../config/db");
+const db = require("../config/db");
 
-exports.getAllCategory = (callback) => {
-  pool.query("SELECT * FROM Category", callback);
-};
+class Category {
+  static async getAll() {
+    try {
+      const [rows] = await db.query("SELECT * FROM Category");
+      return rows;
+    } catch (error) {
+      console.error("Error in getAll:", error);
+      throw new Error("Failed to fetch categories");
+    }
+  }
 
-exports.searchCategoryByName = (name, callback) => {
-  pool.query(
-    "SELECT * FROM Category WHERE name LIKE ?",
-    [`%${name}%`],
-    callback
-  );
-};
+  static async searchByName(name) {
+    try {
+      const [rows] = await db.query(
+        "SELECT * FROM Category WHERE name LIKE ?",
+        [`%${name}%`]
+      );
+      return rows;
+    } catch (error) {
+      console.error("Error in searchByName:", error);
+      throw new Error("Failed to search categories");
+    }
+  }
 
-exports.addCategory = (Category, callback) => {
-  const { category_id, category_name } = Category;
-  const query = `INSERT INTO Category (category_name) VALUES (?)`;
-  const values = [category_name];
-  pool.query(query, values, callback);
-};
+  static async create(categoryData) {
+    try {
+      const [result] = await db.query(
+        "INSERT INTO Category (category_name) VALUES (?)",
+        [categoryData.category_name]
+      );
+      return result.insertId;
+    } catch (error) {
+      console.error("Error in create:", error);
+      throw new Error("Failed to create category");
+    }
+  }
 
-exports.updateCategory = (Category, callback) => {
-  const { category_id, category_name } = Category;
-  const query = `UPDATE Category SET category_name = ? WHERE category_id = ?`;
-  const values = [category_name];
-  pool.query(query, values, callback);
-};
+  static async update(id, categoryData) {
+    try {
+      const [result] = await db.query(
+        "UPDATE Category SET category_name = ? WHERE category_id = ?",
+        [categoryData.category_name, id]
+      );
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error("Error in update:", error);
+      throw new Error("Failed to update category");
+    }
+  }
 
-exports.deleteCategory = (category_id, callback) => {
-  pool.query(
-    "DELETE FROM Category WHERE category_id = ?",
-    [category_id],
-    callback
-  );
-};
+  static async delete(id) {
+    try {
+      const [result] = await db.query(
+        "DELETE FROM Category WHERE category_id = ?",
+        [id]
+      );
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error("Error in delete:", error);
+      throw new Error("Failed to delete category");
+    }
+  }
+}
+
+module.exports = Category;

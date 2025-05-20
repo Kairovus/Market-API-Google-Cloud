@@ -10,8 +10,11 @@ const db = mysql.createPool({
   connectionLimit: 10,
   queueLimit: 0,
   ssl: {
-    rejectUnauthorized: true,
+    rejectUnauthorized: false, // Changed to false for development
   },
+  connectTimeout: 10000, // 10 seconds
+  acquireTimeout: 10000,
+  timeout: 10000,
 });
 
 // Test the connection
@@ -22,6 +25,7 @@ const testConnection = async () => {
     connection.release();
   } catch (err) {
     console.error("Database connection failed:", err);
+    // Don't exit the process, just log the error
   }
 };
 

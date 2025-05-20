@@ -1,35 +1,78 @@
-const pool = require("../config/db");
+const db = require("../config/db");
 
-exports.getAllOrderItem = (callback) => {
-  pool.query("SELECT * FROM Order_Item", callback);
-};
+class OrderItem {
+  static async getAll() {
+    try {
+      const [rows] = await db.query("SELECT * FROM Order_Item");
+      return rows;
+    } catch (error) {
+      console.error("Error in getAll:", error);
+      throw new Error("Failed to fetch order items");
+    }
+  }
 
-exports.getByorder_item_id = (order_item_id, callback) => {
-  pool.query(
-    "SELECT * FROM Order_Item WHERE order_item_id = ?",
-    [order_item_id],
-    callback
-  );
-};
+  static async getById(id) {
+    try {
+      const [rows] = await db.query(
+        "SELECT * FROM Order_Item WHERE order_item_id = ?",
+        [id]
+      );
+      return rows[0];
+    } catch (error) {
+      console.error("Error in getById:", error);
+      throw new Error("Failed to fetch order item");
+    }
+  }
 
-exports.addOrder_Item = (Order_Item, callback) => {
-  const { order_item_id, order_id, product_id, quantity, price } = Order_Item;
-  const query = `INSERT INTO Order_Item (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)`;
-  const values = [order_id, product_id, quantity, price];
-  pool.query(query, values, callback);
-};
+  static async create(orderItemData) {
+    try {
+      const [result] = await db.query(
+        "INSERT INTO Order_Item (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)",
+        [
+          orderItemData.order_id,
+          orderItemData.product_id,
+          orderItemData.quantity,
+          orderItemData.price,
+        ]
+      );
+      return result.insertId;
+    } catch (error) {
+      console.error("Error in create:", error);
+      throw new Error("Failed to create order item");
+    }
+  }
 
-exports.updateOrder_Item = (Order_Item, callback) => {
-  const { order_item_id, order_id, product_id, quantity, price } = Order_Item;
-  const query = `UPDATE Order_Item SET order_id = ?, product_id = ?, quantity = ?, price = ? WHERE order_item_id = ?`;
-  const values = [order_id, product_id, quantity, price];
-  pool.query(query, values, callback);
-};
+  static async update(id, orderItemData) {
+    try {
+      const [result] = await db.query(
+        "UPDATE Order_Item SET order_id = ?, product_id = ?, quantity = ?, price = ? WHERE order_item_id = ?",
+        [
+          orderItemData.order_id,
+          orderItemData.product_id,
+          orderItemData.quantity,
+          orderItemData.price,
+          id,
+        ]
+      );
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error("Error in update:", error);
+      throw new Error("Failed to update order item");
+    }
+  }
 
-exports.deleteOrder_Item = (order_item_id, callback) => {
-  pool.query(
-    "DELETE FROM Order_Item WHERE order_item_id = ?",
-    [order_item_id],
-    callback
-  );
-};
+  static async delete(id) {
+    try {
+      const [result] = await db.query(
+        "DELETE FROM Order_Item WHERE order_item_id = ?",
+        [id]
+      );
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error("Error in delete:", error);
+      throw new Error("Failed to delete order item");
+    }
+  }
+}
+
+module.exports = OrderItem;
