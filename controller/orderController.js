@@ -1,49 +1,62 @@
-const Order = require("../models/Order.js");
+const Order = require("../models/Order");
 
-// Get all orders
-const getAllOrders = (req, res) => {
-  Order.getAllOrders((err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
+exports.getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.getAll();
+    res.json(orders);
+  } catch (error) {
+    console.error("Error in getAllOrders:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// Get order by ID
-const getOrderById = (req, res) => {
-  Order.getOrderByorder_id(req.params.id, (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
+exports.getOrderById = async (req, res) => {
+  try {
+    const order = await Order.getById(req.params.id);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    res.json(order);
+  } catch (error) {
+    console.error("Error in getOrderById:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// Add new order
-const addOrder = (req, res) => {
-  Order.addOrder(req.body, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ ...req.body, id: result.insertId || req.body.id });
-  });
+exports.createOrder = async (req, res) => {
+  try {
+    const orderId = await Order.create(req.body);
+    res
+      .status(201)
+      .json({ id: orderId, message: "Order created successfully" });
+  } catch (error) {
+    console.error("Error in createOrder:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// Update order
-const updateOrder = (req, res) => {
-  Order.updateOrder(req.body, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(req.body);
-  });
+exports.updateOrder = async (req, res) => {
+  try {
+    const success = await Order.update(req.params.id, req.body);
+    if (!success) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    res.json({ message: "Order updated successfully" });
+  } catch (error) {
+    console.error("Error in updateOrder:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// Delete order
-const deleteOrder = (req, res) => {
-  Order.deleteOrder(req.params.id, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
+exports.deleteOrder = async (req, res) => {
+  try {
+    const success = await Order.delete(req.params.id);
+    if (!success) {
+      return res.status(404).json({ message: "Order not found" });
+    }
     res.json({ message: "Order deleted successfully" });
-  });
-};
-
-module.exports = {
-  getAllOrders,
-  getOrderById,
-  addOrder,
-  updateOrder,
-  deleteOrder,
+  } catch (error) {
+    console.error("Error in deleteOrder:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };

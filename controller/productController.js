@@ -1,58 +1,62 @@
-const Products = require("../models/Products.js");
+const Products = require("../models/Products");
 
-// Get all products
-const getAllProducts = (req, res) => {
-  Products.getAllProducts((err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
+exports.getAllProducts = async (req, res) => {
+  try {
+    const products = await Products.getAll();
+    res.json(products);
+  } catch (error) {
+    console.error("Error in getAllProducts:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// Get product by ID
-const getProductById = (req, res) => {
-  Products.getProductByproduct_id(req.params.id, (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
+exports.getProductById = async (req, res) => {
+  try {
+    const product = await Products.getById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.json(product);
+  } catch (error) {
+    console.error("Error in getProductById:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// Search product by name
-const searchProductByName = (req, res) => {
-  Products.searchProductByName(req.params.name, (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
+exports.createProduct = async (req, res) => {
+  try {
+    const productId = await Products.create(req.body);
+    res
+      .status(201)
+      .json({ id: productId, message: "Product created successfully" });
+  } catch (error) {
+    console.error("Error in createProduct:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// Add new product
-const addProduct = (req, res) => {
-  Products.addProduct(req.body, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ ...req.body, id: result.insertId || req.body.id });
-  });
+exports.updateProduct = async (req, res) => {
+  try {
+    const success = await Products.update(req.params.id, req.body);
+    if (!success) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    res.json({ message: "Product updated successfully" });
+  } catch (error) {
+    console.error("Error in updateProduct:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// Update product
-const updateProduct = (req, res) => {
-  Products.updateProduct(req.body, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(req.body);
-  });
-};
-
-// Delete product
-const deleteProduct = (req, res) => {
-  Products.deleteProduct(req.params.id, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
+exports.deleteProduct = async (req, res) => {
+  try {
+    const success = await Products.delete(req.params.id);
+    if (!success) {
+      return res.status(404).json({ message: "Product not found" });
+    }
     res.json({ message: "Product deleted successfully" });
-  });
-};
-
-module.exports = {
-  getAllProducts,
-  getProductById,
-  searchProductByName,
-  addProduct,
-  updateProduct,
-  deleteProduct,
+  } catch (error) {
+    console.error("Error in deleteProduct:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };

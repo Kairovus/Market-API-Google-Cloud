@@ -1,49 +1,62 @@
-const Order_Item = require("../models/Order_Item.js");
+const OrderItem = require("../models/Order_Item");
 
-// Get all order items
-const getAllOrderItems = (req, res) => {
-  Order_Item.getAllOrderItem((err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
+exports.getAllOrderItems = async (req, res) => {
+  try {
+    const orderItems = await OrderItem.getAll();
+    res.json(orderItems);
+  } catch (error) {
+    console.error("Error in getAllOrderItems:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// Get order item by ID
-const getOrderItemById = (req, res) => {
-  Order_Item.getByorder_item_id(req.params.id, (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
-  });
+exports.getOrderItemById = async (req, res) => {
+  try {
+    const orderItem = await OrderItem.getById(req.params.id);
+    if (!orderItem) {
+      return res.status(404).json({ message: "Order item not found" });
+    }
+    res.json(orderItem);
+  } catch (error) {
+    console.error("Error in getOrderItemById:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// Add new order item
-const addOrderItem = (req, res) => {
-  Order_Item.addOrder_Item(req.body, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ ...req.body, id: result.insertId || req.body.id });
-  });
+exports.createOrderItem = async (req, res) => {
+  try {
+    const orderItemId = await OrderItem.create(req.body);
+    res
+      .status(201)
+      .json({ id: orderItemId, message: "Order item created successfully" });
+  } catch (error) {
+    console.error("Error in createOrderItem:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// Update order item
-const updateOrderItem = (req, res) => {
-  Order_Item.updateOrder_Item(req.body, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(req.body);
-  });
+exports.updateOrderItem = async (req, res) => {
+  try {
+    const success = await OrderItem.update(req.params.id, req.body);
+    if (!success) {
+      return res.status(404).json({ message: "Order item not found" });
+    }
+    res.json({ message: "Order item updated successfully" });
+  } catch (error) {
+    console.error("Error in updateOrderItem:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
-// Delete order item
-const deleteOrderItem = (req, res) => {
-  Order_Item.deleteOrder_Item(req.params.id, (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
+exports.deleteOrderItem = async (req, res) => {
+  try {
+    const success = await OrderItem.delete(req.params.id);
+    if (!success) {
+      return res.status(404).json({ message: "Order item not found" });
+    }
     res.json({ message: "Order item deleted successfully" });
-  });
-};
-
-module.exports = {
-  getAllOrderItems,
-  getOrderItemById,
-  addOrderItem,
-  updateOrderItem,
-  deleteOrderItem,
+  } catch (error) {
+    console.error("Error in deleteOrderItem:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
